@@ -6,5 +6,5 @@ The
 Shiny application output can be found at:
 https://peterfurness.shinyapps.io/DDP_Course_Project
 
-The pitch presentation is available as presentation.html in this repository.  It can be viewed using the following URL:
+The pitch presentation is available as Presentation.html in this repository.  It can be viewed using the following URL:
 http://rpubs.com/peterfurness/355316
