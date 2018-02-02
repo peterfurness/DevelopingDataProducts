@@ -1,0 +1,75 @@
+---
+title: "Exploration of the relationship between the uniform and exponential distributions"
+author: "Peter Furness"
+date: "February 2, 2018"
+output: ioslides_presentation
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Introduction 
+
+- A shiny app was created for the analysis
+- The basic idea is to show that if you sample a number of points from a uniform distribution and order them by size, then the inter-point distances follow an exponential distribution (at least approximately)
+- In the app the user can set the sample size and the number of bins used in histograms
+- a Kolomogorov-Smirnov (KS) two-sample test gives a quantitative measure of how close the two distribtions are
+- In these slides selected parts of the app HTML output are produced with R Markdown. A link to the full app output is provided
+- The slides can be used for teaching students about the exponential properties of the uniform distribution!
+
+## Code for the Shiny app
+
+- The ui and server files can be found in the following GitHub repository https://github.com/peterfurness/DevelopingDataProducts
+- A simple monte carlo approach is used to generate the samples
+- the ks.test function is used for the two-sample KS test
+
+## Selected output from the Shiny app
+#### See https://peterfurness.shinyapps.io/DDP_Course_project
+
+
+```{r, echo = FALSE}
+  set.seed(17467)
+	n_unif = 1000
+	bins = 20
+	random_point = runif(n_unif, 0, n_unif)
+
+	## compute interpoint distances, after sorting
+	order_point = random_point[order(random_point)]
+	
+	inter_point = random_point
+	inter_point = 0
+	for (i in 1:(n_unif-1)) (inter_point[i] = order_point[i+1]-order_point[i])
+
+	lambda = mean(inter_point)
+	exponential = rexp(n_unif, rate=lambda)
+
+	mmax = max(inter_point, exponential)
+
+	bands = (0:bins)/bins*mmax
+  par(mfrow=c(2,2))
+	hist(inter_point, breaks=bands, col = rgb(0,0,1,0.5))
+	hist(exponential, breaks = bands, col = rgb(1,0,0,0.5))
+
+	## now the overlay
+	hist(inter_point, breaks=bands, main="Overlay of inter_point and exponential", col = rgb(0,0,1,0.5))
+	hist(exponential, breaks = bands, col = rgb(1,0,0,0.5), add=TRUE)
+```
+	
+	
+```{r, echo = FALSE}
+    kst = ks.test(inter_point, exponential)
+    
+    cat(paste("KS Test: ", "n_unif = ", n_unif, "D = ", 
+              signif(kst$statistic, digits=4), 
+            "p-value = ", signif(kst$p.value, digits=4))) 
+  
+
+```
+
+## Conclusion
+
+- Running the app demostrates that the distribution of inter-point differences from a sample of uniform values is, at least approximately, exponential
+- There are some clear limitations in our analysis. For example, in this approach the inter-point differences will always be bounded above, whereas samples from an exponential distribution are not
+- A more sophisticated approach would be needed to explore the full asymptotic properties of the distributions
